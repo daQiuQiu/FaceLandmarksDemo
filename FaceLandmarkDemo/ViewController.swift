@@ -12,11 +12,12 @@ import AVKit
 
 class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
     
-    var previewLayer: CALayer?
+    var previewLayer: AVCaptureVideoPreviewLayer?
     var faceRectLayer = UIView()
     let captureSession = AVCaptureSession()
     var height: CGFloat = 0
     var width: CGFloat = 0
+    var faceLandMarks:[VNFaceLandmarkRegion2D] = []
     
     var cameraView = UIView()
     
@@ -24,7 +25,8 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         super.viewDidLoad()
         // Do any additional setup after loading the view.
         self.view.backgroundColor = .red
-        self.cameraView.frame = CGRect(x: 0, y: 0, width: 300, height: 400)
+//        self.cameraView.frame = CGRect(x: 0, y: 0, width: 300, height: 399.3)
+        self.cameraView.frame = self.view.frame
         self.cameraView.center = self.view.center
         //        self.cameraView.contentMode = .scaleAspectFit
         self.cameraView.backgroundColor = .black
@@ -44,7 +46,7 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         
         captureSession.sessionPreset = .photo
         
-        let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front)
+        let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
         
         let input = try? AVCaptureDeviceInput(device: device!)
         
@@ -54,7 +56,7 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         
         self.previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
         self.previewLayer?.frame = CGRect(x: 0, y: 0, width: self.cameraView.frame.width, height: self.cameraView.frame.height)
-        
+        self.previewLayer?.contentsGravity = .resizeAspectFill
         self.faceRectLayer.layer.borderColor = UIColor.blue.cgColor
         self.faceRectLayer.layer.borderWidth = 3.0
         self.faceRectLayer.backgroundColor = UIColor.clear
@@ -63,6 +65,8 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         
         let output = AVCaptureVideoDataOutput()
         output.setSampleBufferDelegate(self, queue: DispatchQueue(label: "videoQueue"))
+        output.alwaysDiscardsLateVideoFrames = true
+        output.videoSettings = [(kCVPixelBufferPixelFormatTypeKey as NSString) : NSNumber(value: kCVPixelFormatType_32BGRA)] as [String : Any]
         captureSession.addOutput(output)
         self.cameraView.bringSubviewToFront(self.faceRectLayer)
     }
@@ -83,8 +87,8 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
 //            }
 //        }
         
-        
-        let handler = VNImageRequestHandler(cvPixelBuffer: buffer, options: [:])
+        //downMirrored 一定要用downMirrored 不然方向不对
+        let handler = VNImageRequestHandler(cvPixelBuffer: buffer, orientation: .downMirrored, options: [:])
         
         let faceRequest = VNDetectFaceLandmarksRequest.init { [weak self] (vnRequest, error) in
             print("提取成功 = \(vnRequest.results)")
@@ -100,22 +104,45 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
     
     func processLandmarks(faces: [VNFaceObservation]) {
         if faces.count == 0 {
+            debugPrint("NO FACE")
             return
         }
         
         let firstFace = faces[0]
         
-        let heightRate = CGFloat(self.height) / self.previewLayer!.frame.size.width
+        guard let contour = firstFace.landmarks?.faceContour else {
+            return
+        }
         
-        let faceRectWidth = self.previewLayer!.frame.size.width * firstFace.boundingBox.size.width
-        let faceRectHeight = self.previewLayer!.frame.size.height * firstFace.boundingBox.size.height
-        //前置摄像头
-        let faceX = self.previewLayer!.frame.size.width * (1.0 - firstFace.boundingBox.origin.x - firstFace.boundingBox.size.width)
-        //Y 左下
-        let faceY = self.previewLayer!.frame.size.height - (firstFace.boundingBox.origin.y * self.previewLayer!.frame.size.height) - faceRectHeight
-
+        
+        
+        var faceBoxOnscreen = self.previewLayer!.layerRectConverted(fromMetadataOutputRect: firstFace.boundingBox)
+//        faceBoxOnscreen.origin.x = 1.0 - faceBoxOnscreen.origin.x
+//        let heightRate = CGFloat(self.height) / self.previewLayer!.frame.size.width
+        let x = faceBoxOnscreen.origin.x
+        let y = faceBoxOnscreen.origin.y
+        let w = faceBoxOnscreen.size.width
+        let h = faceBoxOnscreen.size.height
         DispatchQueue.main.async {
-            self.faceRectLayer.frame = CGRect(x: faceX, y: faceY, width: faceRectWidth, height: faceRectHeight)
+            for view in self.cameraView.subviews {
+                view.removeFromSuperview()
+            }
+            self.faceRectLayer.frame = faceBoxOnscreen
+            self.cameraView.addSubview(self.faceRectLayer)
+            for i in 0..<contour.pointCount {
+                var point = contour.normalizedPoints[i]
+                point.x = 1.0 - point.x
+                
+                let pointView = UIView()
+                pointView.frame = CGRect(x: 0, y: 0, width: 2.0, height: 2.0)
+                pointView.center = CGPoint(x: x + w * point.x, y: self.previewLayer!.frame.size.height - (y + h * point.y))
+                pointView.layer.cornerRadius = 1.0
+                pointView.backgroundColor = .red
+                pointView.clipsToBounds = true
+                
+                self.cameraView.addSubview(pointView)
+                
+            }
             //            self.faceRectLayer.frame = firstFace.boundingBox
         }
         
