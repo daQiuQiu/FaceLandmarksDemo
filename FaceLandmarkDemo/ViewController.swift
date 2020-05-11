@@ -46,7 +46,7 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         
         captureSession.sessionPreset = .photo
         
-        let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .back)
+        let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front)
         
         let input = try? AVCaptureDeviceInput(device: device!)
         
@@ -66,7 +66,7 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         let output = AVCaptureVideoDataOutput()
         output.setSampleBufferDelegate(self, queue: DispatchQueue(label: "videoQueue"))
         output.alwaysDiscardsLateVideoFrames = true
-        output.videoSettings = [(kCVPixelBufferPixelFormatTypeKey as NSString) : NSNumber(value: kCVPixelFormatType_32BGRA)] as [String : Any]
+//        output.videoSettings = [(kCVPixelBufferPixelFormatTypeKey as NSString) : NSNumber(value: kCVPixelFormatType_32BGRA)] as [String : Any]
         captureSession.addOutput(output)
         self.cameraView.bringSubviewToFront(self.faceRectLayer)
     }
@@ -75,17 +75,6 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
         guard let buffer = CMSampleBufferGetImageBuffer(sampleBuffer)else {
             return
         }
-        
-//        if let pixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer) {
-//            let ciimage = CIImage(cvImageBuffer: pixelBuffer)
-//            let image = UIImage(ciImage: ciimage)
-//            self.height = image.size.height
-//            self.width = image.size.width
-//
-//            DispatchQueue.main.async {
-//                //                self.cameraView.image = image
-//            }
-//        }
         
         //downMirrored 一定要用downMirrored 不然方向不对
         let handler = VNImageRequestHandler(cvPixelBuffer: buffer, orientation: .downMirrored, options: [:])
@@ -108,15 +97,60 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
             return
         }
         
+        //细节点
         let firstFace = faces[0]
-        
-        guard let contour = firstFace.landmarks?.faceContour else {
-            return
+        //轮廓
+        if let contour = firstFace.landmarks?.faceContour {
+            self.faceLandMarks.append(contour)
+        }
+        //左眼
+        if let leftEye = firstFace.landmarks?.leftEye {
+            self.faceLandMarks.append(leftEye)
+        }
+        //右眼
+        if let rightEye = firstFace.landmarks?.rightEye {
+            self.faceLandMarks.append(rightEye)
+        }
+        //左眉毛
+        if let leftEyeBrow = firstFace.landmarks?.leftEyebrow {
+            self.faceLandMarks.append(leftEyeBrow)
+        }
+        //右眉毛
+        if let rightEyeBrow = firstFace.landmarks?.rightEyebrow {
+            self.faceLandMarks.append(rightEyeBrow)
+        }
+        //外嘴唇
+        if let outerLips = firstFace.landmarks?.outerLips {
+            self.faceLandMarks.append(outerLips)
+        }
+        //内嘴唇
+        if let innerLips = firstFace.landmarks?.innerLips {
+            self.faceLandMarks.append(innerLips)
+        }
+        //鼻子
+        if let nose = firstFace.landmarks?.nose {
+            self.faceLandMarks.append(nose)
+        }
+        //鼻尖
+        if let noseCrest = firstFace.landmarks?.noseCrest {
+            self.faceLandMarks.append(noseCrest)
+        }
+        //中线
+        if let medianLine = firstFace.landmarks?.medianLine {
+            self.faceLandMarks.append(medianLine)
+        }
+        //左眼球
+        if let leftPupil = firstFace.landmarks?.leftPupil {
+            self.faceLandMarks.append(leftPupil)
+        }
+        //右眼球
+        if let rightPupil = firstFace.landmarks?.rightPupil {
+            self.faceLandMarks.append(rightPupil)
         }
         
         
-        
-        var faceBoxOnscreen = self.previewLayer!.layerRectConverted(fromMetadataOutputRect: firstFace.boundingBox)
+
+        let faceBoxOnscreen = self.previewLayer!.layerRectConverted(fromMetadataOutputRect: firstFace.boundingBox)
 //        faceBoxOnscreen.origin.x = 1.0 - faceBoxOnscreen.origin.x
 //        let heightRate = CGFloat(self.height) / self.previewLayer!.frame.size.width
         let x = faceBoxOnscreen.origin.x
@@ -129,24 +163,30 @@ class ViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDele
             }
             self.faceRectLayer.frame = faceBoxOnscreen
             self.cameraView.addSubview(self.faceRectLayer)
-            for i in 0..<contour.pointCount {
-                var point = contour.normalizedPoints[i]
-                point.x = 1.0 - point.x
-                
-                let pointView = UIView()
-                pointView.frame = CGRect(x: 0, y: 0, width: 2.0, height: 2.0)
-                pointView.center = CGPoint(x: x + w * point.x, y: self.previewLayer!.frame.size.height - (y + h * point.y))
-                pointView.layer.cornerRadius = 1.0
-                pointView.backgroundColor = .red
-                pointView.clipsToBounds = true
-                
-                self.cameraView.addSubview(pointView)
-                
+            
+            //提取所有关键点
+            if let allPoints = firstFace.landmarks?.allPoints {
+                for i in 0..<allPoints.pointCount {
+                    let point = allPoints.normalizedPoints[i]
+                    
+                    let pointView = UIView()
+                    pointView.frame = CGRect(x: 0, y: 0, width: 2.0, height: 2.0)
+                    pointView.center = CGPoint(x: point.y * h + x, y: point.x * w + y)
+                    pointView.layer.cornerRadius = 1.0
+                    pointView.backgroundColor = .green
+                    pointView.clipsToBounds = true
+                    
+                    self.cameraView.addSubview(pointView)
+                    
+                }
             }
-            //            self.faceRectLayer.frame = firstFace.boundingBox
         }
         
-        //        self.view.layer.addSublayer(faceRectLayer)
+        
+    }
+    
+    func processLandmarkDetail() {
+        
     }
     
 }
