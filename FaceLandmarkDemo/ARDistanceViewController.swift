@@ -51,6 +51,11 @@ class ARDistanceViewController: UIViewController {
         setupEyeNode()
     }
     
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        self.sceneView.session.pause()
+    }
+    
     func setupEyeNode() {
         let eyeGeometry = SCNSphere(radius: 0.005)
         eyeGeometry.materials.first?.diffuse.contents = UIColor.green
