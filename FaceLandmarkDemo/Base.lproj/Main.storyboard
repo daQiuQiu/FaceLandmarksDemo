@@ -23,10 +23,10 @@
             </objects>
             <point key="canvasLocation" x="1042.0289855072465" y="135.9375"/>
         </scene>
-        <!--Navigation Controller-->
+        <!--Face Navigation View Controller-->
         <scene sceneID="Sos-OB-xSw">
             <objects>
-                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="agq-zy-dUo" sceneMemberID="viewController">
+                <navigationController automaticallyAdjustsScrollViewInsets="NO" id="agq-zy-dUo" customClass="FaceNavigationViewController" customModule="FaceLandmarkDemo" customModuleProvider="target" sceneMemberID="viewController">
                     <toolbarItems/>
                     <navigationBar key="navigationBar" contentMode="scaleToFill" insetsLayoutMarginsFromSafeArea="NO" id="QuL-Pc-3fL">
                         <rect key="frame" x="0.0" y="44" width="414" height="44"/>

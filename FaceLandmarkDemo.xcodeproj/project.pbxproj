@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -12,8 +12,10 @@
 		A60874A42456D8AC00AE208C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A60874A22456D8AC00AE208C /* Main.storyboard */; };
 		A60874A62456D8AF00AE208C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A60874A52456D8AF00AE208C /* Assets.xcassets */; };
 		A60874A92456D8AF00AE208C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A60874A72456D8AF00AE208C /* LaunchScreen.storyboard */; };
+		A6A760A2246E7A5E00568C50 /* FaceNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A760A1246E7A5E00568C50 /* FaceNavigationViewController.swift */; };
 		A6EB1535246BD9E500D824D1 /* ARDistanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EB1534246BD9E500D824D1 /* ARDistanceViewController.swift */; };
 		A6EB1537246BDA1900D824D1 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EB1536246BDA1900D824D1 /* ViewController.swift */; };
+		FEBCFCC9501E48CF882DB5A6 /* libPods-FaceLandmarkDemo.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1714981303105D4CE239C401 /* libPods-FaceLandmarkDemo.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -30,6 +32,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		1714981303105D4CE239C401 /* libPods-FaceLandmarkDemo.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-FaceLandmarkDemo.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+		4170124A07307CCCDC1A7BAF /* Pods-FaceLandmarkDemo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FaceLandmarkDemo.debug.xcconfig"; path = "Target Support Files/Pods-FaceLandmarkDemo/Pods-FaceLandmarkDemo.debug.xcconfig"; sourceTree = "<group>"; };
 		A60874992456D8AC00AE208C /* FaceLandmarkDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FaceLandmarkDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A608749C2456D8AC00AE208C /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		A60874A02456D8AC00AE208C /* VNDistanceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VNDistanceViewController.swift; sourceTree = "<group>"; };
@@ -37,8 +41,10 @@
 		A60874A52456D8AF00AE208C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A60874A82456D8AF00AE208C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A60874AA2456D8AF00AE208C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A6A760A1246E7A5E00568C50 /* FaceNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceNavigationViewController.swift; sourceTree = "<group>"; };
 		A6EB1534246BD9E500D824D1 /* ARDistanceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARDistanceViewController.swift; sourceTree = "<group>"; };
 		A6EB1536246BDA1900D824D1 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		F78BEA0155E108BAB06DC846 /* Pods-FaceLandmarkDemo.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-FaceLandmarkDemo.release.xcconfig"; path = "Target Support Files/Pods-FaceLandmarkDemo/Pods-FaceLandmarkDemo.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -46,17 +52,37 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				FEBCFCC9501E48CF882DB5A6 /* libPods-FaceLandmarkDemo.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		623D693F58C6BBB05DE9D528 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1714981303105D4CE239C401 /* libPods-FaceLandmarkDemo.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		94DCE56F78BE8289EB1CE543 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				4170124A07307CCCDC1A7BAF /* Pods-FaceLandmarkDemo.debug.xcconfig */,
+				F78BEA0155E108BAB06DC846 /* Pods-FaceLandmarkDemo.release.xcconfig */,
+			);
+			path = Pods;
+			sourceTree = "<group>";
+		};
 		A60874902456D8AC00AE208C = {
 			isa = PBXGroup;
 			children = (
 				A608749B2456D8AC00AE208C /* FaceLandmarkDemo */,
 				A608749A2456D8AC00AE208C /* Products */,
+				94DCE56F78BE8289EB1CE543 /* Pods */,
+				623D693F58C6BBB05DE9D528 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -71,6 +97,7 @@
 		A608749B2456D8AC00AE208C /* FaceLandmarkDemo */ = {
 			isa = PBXGroup;
 			children = (
+				A6A760A1246E7A5E00568C50 /* FaceNavigationViewController.swift */,
 				A608749C2456D8AC00AE208C /* AppDelegate.swift */,
 				A6EB1536246BDA1900D824D1 /* ViewController.swift */,
 				A60874A02456D8AC00AE208C /* VNDistanceViewController.swift */,
@@ -90,6 +117,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = A60874AD2456D8AF00AE208C /* Build configuration list for PBXNativeTarget "FaceLandmarkDemo" */;
 			buildPhases = (
+				7C0675986E51C400951E76DD /* [CP] Check Pods Manifest.lock */,
 				A60874952456D8AC00AE208C /* Sources */,
 				A60874962456D8AC00AE208C /* Frameworks */,
 				A60874972456D8AC00AE208C /* Resources */,
@@ -150,12 +178,38 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		7C0675986E51C400951E76DD /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-FaceLandmarkDemo-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		A60874952456D8AC00AE208C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				A60874A12456D8AC00AE208C /* VNDistanceViewController.swift in Sources */,
+				A6A760A2246E7A5E00568C50 /* FaceNavigationViewController.swift in Sources */,
 				A608749D2456D8AC00AE208C /* AppDelegate.swift in Sources */,
 				A6EB1537246BDA1900D824D1 /* ViewController.swift in Sources */,
 				A6EB1535246BD9E500D824D1 /* ARDistanceViewController.swift in Sources */,
@@ -234,7 +288,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -288,7 +342,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -300,6 +354,7 @@
 		};
 		A60874AE2456D8AF00AE208C /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 4170124A07307CCCDC1A7BAF /* Pods-FaceLandmarkDemo.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
@@ -323,6 +378,7 @@
 		};
 		A60874AF2456D8AF00AE208C /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F78BEA0155E108BAB06DC846 /* Pods-FaceLandmarkDemo.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;

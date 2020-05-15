@@ -1,0 +1,48 @@
+BUILD_CONFIGURATIONS:
+  Debug: :debug
+  Release: :release
+CACHE_KEYS:
+  Alamofire:
+    BUILD_SETTINGS_CHECKSUM:
+      Alamofire:
+        :debug: f32db90b1412fffd50913bcc6ee70404
+        :release: f32db90b1412fffd50913bcc6ee70404
+    CHECKSUM: 85e8a02c69d6020a0d734f6054870d7ecb75cf18
+    PROJECT_NAME: Alamofire
+    SPECS:
+      - Alamofire (4.9.1)
+  Pods-FaceLandmarkDemo:
+    BUILD_SETTINGS_CHECKSUM:
+      Debug: 42fb3e5a59fe48bab12b072abd764047
+      Release: 42fb3e5a59fe48bab12b072abd764047
+  SnapKit:
+    BUILD_SETTINGS_CHECKSUM:
+      SnapKit:
+        :debug: d7d86d33ecdf86b2ddd5656c736608ea
+        :release: d7d86d33ecdf86b2ddd5656c736608ea
+    CHECKSUM: fe8a619752f3f27075cc9a90244d75c6c3f27e2a
+    PROJECT_NAME: SnapKit
+    SPECS:
+      - SnapKit (4.2.0)
+  SwiftyJSON:
+    BUILD_SETTINGS_CHECKSUM:
+      SwiftyJSON:
+        :debug: f89e485444c1392a41b526001e9076db
+        :release: f89e485444c1392a41b526001e9076db
+    CHECKSUM: 36413e04c44ee145039d332b4f4e2d3e8d6c4db7
+    PROJECT_NAME: SwiftyJSON
+    SPECS:
+      - SwiftyJSON (5.0.0)
+  Toast-Swift:
+    BUILD_SETTINGS_CHECKSUM:
+      Toast-Swift:
+        :debug: acba990db9d4dc8d19b4acef3577c06c
+        :release: acba990db9d4dc8d19b4acef3577c06c
+    CHECKSUM: 9b6a70f28b3bf0b96c40d46c0c4b9d6639846711
+    PROJECT_NAME: Toast-Swift
+    SPECS:
+      - Toast-Swift (5.0.1)
+OBJECT_VERSION: 51
+PLUGINS:
+  cocoapods-stats:
+    {}

@@ -9,18 +9,31 @@
 import UIKit
 import Vision
 import AVKit
+import SceneKit
+import ModelIO
+import SnapKit
+import Toast_Swift
 //import TTEmotion
 
-class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate, AVCapturePhotoCaptureDelegate {
+class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
+    
+    var previewLayer1: AVCaptureVideoPreviewLayer?
+    let captureSession1 = AVCaptureSession()
     
     var previewLayer: AVCaptureVideoPreviewLayer?
     var faceRectLayer = UIView()
     let captureSession = AVCaptureSession()
     var height: CGFloat = 0
     var width: CGFloat = 0
+    var fLength: Float = 0
     var faceLandMarks:[VNFaceLandmarkRegion2D] = []
-//    let ttManager = TTEmotionManager.init()
+    //    let ttManager = TTEmotionManager.init()
     var clap: CGRect = CGRect.zero
+    var eyeDistance: Float = 0
+    var resolutionFactor: Float = 0
+    var connection:AVCaptureConnection?
+    var previewFactor: CGFloat = 0
+    var upScale: CGFloat = 0
     
     lazy var distanceLabel: UILabel = {
         let label = UILabel()
@@ -29,56 +42,89 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
         label.textColor = .white
         return label
     }()
-//    var ttManager: TTEmotionManager = TTEmotionManager()
+    //    var ttManager: TTEmotionManager = TTEmotionManager()
     
     var cameraView = UIView()
     
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        print("didAppear")
+        self.fLength = 0
+        self.resolutionFactor = Float(3.0 / UIScreen.main.scale)
         self.view.backgroundColor = .red
-        self.cameraView.frame = CGRect(x: 0, y: 0, width: 300, height: 400)
-//        self.cameraView.frame = self.view.frame
+        self.cameraView.frame = CGRect(x: 0, y: 0, width: 300, height: 533)
+        //        self.cameraView.frame = self.view.frame
         self.cameraView.center = self.view.center
         //        self.cameraView.contentMode = .scaleAspectFit
         self.cameraView.backgroundColor = .black
         self.view.addSubview(self.cameraView)
         self.cameraView.addSubview(faceRectLayer)
         self.view.addSubview(self.distanceLabel)
-    }
-    
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        
         
         
         setupCapture()
-    }
-    
-    func setupCapture() {
-        
-        captureSession.sessionPreset = .photo
-        
-        let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front)
-        
-        let input = try? AVCaptureDeviceInput(device: device!)
-        
-        captureSession.addInput(input!)
         
         captureSession.startRunning()
         
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
+//            self.setupCam()
+//            self.captureSession1.startRunning()
+        }
+        
+    }
+    
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        captureSession.stopRunning()
+    }
+    
+    deinit {
+        print("Vision VC deinit")
+    }
+    
+    func setupCapture() {
+        let camera = SceneKit.SCNCamera()
+        print("focal = \(camera.focalDistance)")
+        
+        let mdl = ModelIO.MDLCamera()
+        print("mld focal = \(mdl.focalLength)")
+        
+        let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front)
+        try? device?.lockForConfiguration()
+        //        captureSession.sessionPreset = .iFrame960x540
+        
+        captureSession.commitConfiguration()
+        device?.unlockForConfiguration()
+        
+        print("device aperture = \(device?.lensAperture)")
+        //        print("eqv focal length = \(self.getEquivalentFocalLength(format: device!.activeFormat))")
+        let input = try? AVCaptureDeviceInput(device: device!)
+        
+        
+        self.fLength = self.getEquivalentFocalLength(format: device!.activeFormat)
+        
+        captureSession.addInput(input!)
+        
+        
+        
         self.previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
         self.previewLayer?.frame = CGRect(x: 0, y: 0, width: self.cameraView.frame.width, height: self.cameraView.frame.height)
-//        self.previewLayer?.contentsGravity = .resizeAspectFill
-        self.previewLayer?.videoGravity = .resize
+        //        self.previewLayer?.contentsGravity = .resizeAspectFit
+        self.previewLayer?.videoGravity = .resizeAspect
         self.faceRectLayer.layer.borderColor = UIColor.blue.cgColor
         self.faceRectLayer.layer.borderWidth = 3.0
         self.faceRectLayer.backgroundColor = UIColor.clear
         self.cameraView.layer.addSublayer(self.previewLayer!)
         
         //获取静态图片
-        let stillOutput = AVCapturePhotoOutput()
-        let setting = AVCapturePhotoSettings.init(format: [AVVideoCodecKey:AVVideoCodecType.jpeg])
+        //        let stillOutput = AVCapturePhotoOutput()
+        //        let setting = AVCapturePhotoSettings.init(format: [AVVideoCodecKey:AVVideoCodecType.jpeg])
         
         
         let output = AVCaptureVideoDataOutput()
@@ -86,9 +132,9 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
         output.alwaysDiscardsLateVideoFrames = true
         output.videoSettings = [(kCVPixelBufferPixelFormatTypeKey as NSString) : NSNumber(value: kCVPixelFormatType_32BGRA)] as [String : Any]
         captureSession.addOutput(output)
-        
-//        captureSession.addOutput(stillOutput)
-//        stillOutput.capturePhoto(with: setting, delegate: self)
+
+        //        captureSession.addOutput(stillOutput)
+        //        stillOutput.capturePhoto(with: setting, delegate: self)
         
         self.cameraView.bringSubviewToFront(self.faceRectLayer)
     }
@@ -97,22 +143,27 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
         print("拍照！")
     }
     
+    
     func captureOutput(_ output: AVCaptureOutput, didOutput sampleBuffer: CMSampleBuffer, from connection: AVCaptureConnection) {
         guard let buffer: CVPixelBuffer = CMSampleBufferGetImageBuffer(sampleBuffer)else {
             return
         }
         
         
-
-//        let image = self.convert(buffer: buffer)
-//        self.ttManager.visionDetectFace(image: image, frame: self.previewLayer!.frame) { (model, dic) in
-//                print("result = \(dic)")
-//        }
         
+        //        let image = self.convert(buffer: buffer)
+        //        self.ttManager.visionDetectFace(image: image, frame: self.previewLayer!.frame) { (model, dic) in
+        //                print("result = \(dic)")
+        //        }
+        
+        if connection == self.connection {
+            print("conn")
+        }
         
         
         if let fdesc = CMSampleBufferGetFormatDescription(sampleBuffer) {
-           self.clap = CMVideoFormatDescriptionGetCleanAperture(fdesc, originIsAtTopLeft: true)
+            self.clap = CMVideoFormatDescriptionGetCleanAperture(fdesc, originIsAtTopLeft: true)
+            self.previewFactor =  (self.previewLayer!.frame.size.width * self.previewLayer!.frame.size.height * UIScreen.main.scale) / (self.clap.size.width * self.clap.size.height * self.upScale)
         }
         
         
@@ -120,7 +171,7 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
         let handler = VNImageRequestHandler(cvPixelBuffer: buffer, orientation: .downMirrored, options: [:])
         
         let faceRequest = VNDetectFaceLandmarksRequest.init { [weak self] (vnRequest, error) in
-//            print("提取成功 = \(vnRequest.results)")
+            //            print("提取成功 = \(vnRequest.results)")
             if let result = vnRequest.results as? [VNFaceObservation] {
                 self?.processLandmarks(faces: result)
             }else {
@@ -179,17 +230,11 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
         if let medianLine = firstFace.landmarks?.medianLine {
             self.faceLandMarks.append(medianLine)
         }
-        //左眼球
-        if let leftPupil = firstFace.landmarks?.leftPupil {
-            self.faceLandMarks.append(leftPupil)
-        }
-        //右眼球
-        if let rightPupil = firstFace.landmarks?.rightPupil {
-            self.faceLandMarks.append(rightPupil)
-        }
         
         
-
+        
+        
+        
         var faceBoxOnscreen = self.previewLayer!.layerRectConverted(fromMetadataOutputRect: firstFace.boundingBox)
         
         let widthScale = faceBoxOnscreen.size.width / self.clap.size.width
@@ -199,6 +244,29 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
         let y = faceBoxOnscreen.origin.y
         let w = faceBoxOnscreen.size.width
         let h = faceBoxOnscreen.size.height
+        
+        
+        //左眼球
+        if let leftPupil = firstFace.landmarks?.leftPupil {
+            self.faceLandMarks.append(leftPupil)
+            //右眼球
+            if let rightPupil = firstFace.landmarks?.rightPupil {
+                self.faceLandMarks.append(rightPupil)
+                
+                guard let leftEyePoint = leftPupil.normalizedPoints.first else { return }
+                guard let rightEyePoint = rightPupil.normalizedPoints.first else { return }
+                
+                let leftX = leftEyePoint.y * h + x
+                let rightX = rightEyePoint.y * h + x
+                
+                let leftY = leftEyePoint.x * w + y
+                let rightY = rightEyePoint.x * w + y
+                
+                
+                self.eyeDistance = sqrtf(powf(Float(leftX - rightX), 2) + powf(Float(leftY - rightY), 2))
+            }
+        }
+        
         DispatchQueue.main.async {
             for view in self.cameraView.subviews {
                 view.removeFromSuperview()
@@ -223,11 +291,20 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
                 }
             }
             
+            
+            let distanceTest = self.fLength * (Float(self.clap.size.height) / self.eyeDistance) / 10 * self.resolutionFactor
+//            let distanceTest = self.fLength * (Float(self.clap.size.height) / self.eyeDistance * Float(1.0 / self.previewFactor)) / 10
+//            //            if UIDevice.current.orientation.isLandscape {
+//            //                distanceTest = self.fLength * (Float(self.clap.size.width) / self.eyeDistance) / 10
+            //            }
+            
+            
             let distance = (700.0 - (w + h)) / 10.0
-            self.distanceLabel.text = ("distance = \(String(format: "%.2f", distance)) CM")
+            self.distanceLabel.text = ("distance = \(String(format: "%.2f", distanceTest)) CM")
             print("distance = \(distance) CM")
+            print("testDistance = \(distanceTest) eyeDistance = \(self.eyeDistance) focal length = \(self.fLength)")
         }
-
+        
     }
     
     
@@ -244,11 +321,33 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
     func convert(buffer:CVPixelBuffer) -> UIImage
     {
         
-         let ciimage: CIImage = CIImage(cvPixelBuffer: buffer)
-         let context:CIContext = CIContext.init(options: nil)
-         let cgImage:CGImage = context.createCGImage(ciimage, from: ciimage.extent)!
-         let image:UIImage = UIImage.init(cgImage: cgImage)
-         return image
+        let ciimage: CIImage = CIImage(cvPixelBuffer: buffer)
+        let context:CIContext = CIContext.init(options: nil)
+        let cgImage:CGImage = context.createCGImage(ciimage, from: ciimage.extent)!
+        let image:UIImage = UIImage.init(cgImage: cgImage)
+        return image
+    }
+    
+    func getEquivalentFocalLength(format : AVCaptureDevice.Format) -> Float {
+        // get reported field of view. Documentation says this is the horizontal field of view
+        
+        // convert to radians
+        self.upScale = format.videoZoomFactorUpscaleThreshold
+        let fov = format.videoFieldOfView * Float.pi/180.0
+        // angle and opposite of right angle triangle are half the fov and half the width of
+        // 35mm film (ie 18mm). The adjacent value of the right angle triangle is the equivalent
+        // focal length. Using some right angle triangle math you can work out focal length
+        let focalLen = 15.5 / tan(fov/2)
+        return focalLen
+    }
+    
+    //MARK: 方向控制
+    override var shouldAutorotate: Bool {
+        return true
+    }
+    
+    override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
+        return [.portrait]
     }
     
 }

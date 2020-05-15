@@ -9,6 +9,8 @@
 import UIKit
 import ARKit
 import SceneKit
+import SnapKit
+import Toast_Swift
 
 class ARDistanceViewController: UIViewController {
     
@@ -18,7 +20,8 @@ class ARDistanceViewController: UIViewController {
     var rightEye = SCNNode()
     lazy var sceneView: ARSCNView = {
         let view = ARSCNView()
-        view.frame = self.view.frame
+        view.frame = CGRect(x: 0, y: 0, width: 300, height: 600)
+        view.center = self.view.center
         return view
     }()
     
@@ -34,6 +37,7 @@ class ARDistanceViewController: UIViewController {
         super.viewDidLoad()
         self.view.backgroundColor = .darkGray
         guard ARFaceTrackingConfiguration.isSupported else {
+            self.view.makeToast("设备不支持ARFace")
             print("设备不支持")
             return
         }
@@ -54,6 +58,10 @@ class ARDistanceViewController: UIViewController {
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         self.sceneView.session.pause()
+    }
+    
+    deinit {
+        print("ARKit VC deinit")
     }
     
     func setupEyeNode() {

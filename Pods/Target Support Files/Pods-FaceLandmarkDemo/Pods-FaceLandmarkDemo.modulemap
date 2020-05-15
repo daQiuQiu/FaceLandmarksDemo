@@ -1,0 +1,6 @@
+module Pods_FaceLandmarkDemo {
+  umbrella header "Pods-FaceLandmarkDemo-umbrella.h"
+
+  export *
+  module * { export * }
+}
