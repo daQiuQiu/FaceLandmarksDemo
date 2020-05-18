@@ -59,7 +59,7 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
         self.fLength = 0
         self.resolutionFactor = Float(3.0 / UIScreen.main.scale)
         self.view.backgroundColor = .red
-        self.cameraView.frame = CGRect(x: 0, y: 0, width: 300, height: 533)
+        self.cameraView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
         //        self.cameraView.frame = self.view.frame
         self.cameraView.center = self.view.center
         //        self.cameraView.contentMode = .scaleAspectFit
@@ -305,10 +305,12 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
             
             let distanceAndroid = self.fLength * (63.0 / self.sensorX) * eyeFactor / 3.0
             
+            let distanceAli = ( 63 * Float(self.view.frame.width) / 24 / (self.eyeDistance)) * self.fLength / 10.0 * (Float(UIScreen.main.scale / self.upScale))
+            
             let distance = (700.0 - (w + h)) / 10.0
-            self.distanceLabel.text = ("distance = \(String(format: "%.2f", distanceAndroid)) CM")
+            self.distanceLabel.text = ("distance = \(String(format: "%.2f", distanceAli)) CM")
             print("distance = \(distance) CM")
-            print("testDistance = \(distanceAndroid) eyeDistance = \(self.eyeDistance) focal length = \(self.fLength)")
+            print("testDistance = \(distanceAli) eyeDistance = \(self.eyeDistance) focal length = \(self.fLength)")
         }
         
     }
