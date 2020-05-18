@@ -34,6 +34,7 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
     var connection:AVCaptureConnection?
     var previewFactor: CGFloat = 0
     var upScale: CGFloat = 0
+    var sensorX: Float = 0
     
     lazy var distanceLabel: UILabel = {
         let label = UILabel()
@@ -73,8 +74,8 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
         captureSession.startRunning()
         
         DispatchQueue.main.asyncAfter(deadline: .now() + 5.0) {
-//            self.setupCam()
-//            self.captureSession1.startRunning()
+            //            self.setupCam()
+            //            self.captureSession1.startRunning()
         }
         
     }
@@ -132,7 +133,7 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
         output.alwaysDiscardsLateVideoFrames = true
         output.videoSettings = [(kCVPixelBufferPixelFormatTypeKey as NSString) : NSNumber(value: kCVPixelFormatType_32BGRA)] as [String : Any]
         captureSession.addOutput(output)
-
+        
         //        captureSession.addOutput(stillOutput)
         //        stillOutput.capturePhoto(with: setting, delegate: self)
         
@@ -293,16 +294,21 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
             
             
             let distanceTest = self.fLength * (Float(self.clap.size.height) / self.eyeDistance) / 10 * self.resolutionFactor
-//            let distanceTest = self.fLength * (Float(self.clap.size.height) / self.eyeDistance * Float(1.0 / self.previewFactor)) / 10
-//            //            if UIDevice.current.orientation.isLandscape {
-//            //                distanceTest = self.fLength * (Float(self.clap.size.width) / self.eyeDistance) / 10
+            //            let distanceTest = self.fLength * (Float(self.clap.size.height) / self.eyeDistance * Float(1.0 / self.previewFactor)) / 10
+            //            //            if UIDevice.current.orientation.isLandscape {
+            //            //                distanceTest = self.fLength * (Float(self.clap.size.width) / self.eyeDistance) / 10
             //            }
             
+            let distanceEye = self.fLength * (Float(self.clap.size.height / (self.previewLayer!.frame.width * self.upScale) * 65.0) / self.eyeDistance)
+            
+            let eyeFactor = Float(Float(self.previewLayer!.frame.width) / (2.0 * self.eyeDistance))
+            
+            let distanceAndroid = self.fLength * (63.0 / self.sensorX) * eyeFactor / 3.0
             
             let distance = (700.0 - (w + h)) / 10.0
-            self.distanceLabel.text = ("distance = \(String(format: "%.2f", distanceTest)) CM")
+            self.distanceLabel.text = ("distance = \(String(format: "%.2f", distanceAndroid)) CM")
             print("distance = \(distance) CM")
-            print("testDistance = \(distanceTest) eyeDistance = \(self.eyeDistance) focal length = \(self.fLength)")
+            print("testDistance = \(distanceAndroid) eyeDistance = \(self.eyeDistance) focal length = \(self.fLength)")
         }
         
     }
@@ -338,6 +344,10 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
         // 35mm film (ie 18mm). The adjacent value of the right angle triangle is the equivalent
         // focal length. Using some right angle triangle math you can work out focal length
         let focalLen = 15.5 / tan(fov/2)
+        
+        let radi = format.videoFieldOfView / 2 * Float.pi/180.0
+        
+        self.sensorX = tan(radi) * 2 * focalLen
         return focalLen
     }
     
