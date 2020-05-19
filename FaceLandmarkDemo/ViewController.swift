@@ -34,6 +34,18 @@ class ViewController: UIViewController {
         btn.addTarget(self, action: #selector(goToARVC), for: .touchUpInside)
         return btn
     }()
+    
+    lazy var photoBtn: UIButton = {
+        let btn = UIButton()
+        btn.layer.cornerRadius = 24
+        btn.setTitle("拍照", for: .normal)
+        btn.layer.borderColor = UIColor.white.cgColor
+        btn.layer.borderWidth = 1.0
+        btn.titleLabel?.font = .systemFont(ofSize: 18)
+        btn.titleLabel?.textColor = .white
+        btn.addTarget(self, action: #selector(goToPhoto), for: .touchUpInside)
+        return btn
+    }()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -47,11 +59,14 @@ class ViewController: UIViewController {
     func setupUI () {
         self.arBtn.frame = CGRect(x: 0, y: 0, width: 200, height: 60)
         self.vnBtn.frame = CGRect(x: 0, y: 0, width: 200, height: 60)
+        self.photoBtn.frame = CGRect(x: 0, y: 0, width: 200, height: 60)
         self.arBtn.center = CGPoint(x: self.view.center.x, y: self.view.center.y + 100)
         self.vnBtn.center = CGPoint(x: self.view.center.x, y: self.view.center.y - 100)
+        self.photoBtn.center = CGPoint(x: self.view.center.x, y: self.view.center.y + 200)
         
         self.view.addSubview(self.vnBtn)
         self.view.addSubview(self.arBtn)
+        self.view.addSubview(self.photoBtn)
     }
     
 
@@ -62,6 +77,12 @@ class ViewController: UIViewController {
     }
     
     @objc func goToVNVC() {
+        let vc = VNDistanceViewController()
+        
+        self.navigationController?.pushViewController(vc, animated: true)
+    }
+    
+    @objc func goToPhoto() {
         let vc = VNDistanceViewController()
         
         self.navigationController?.pushViewController(vc, animated: true)

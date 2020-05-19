@@ -34,13 +34,17 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
     var connection:AVCaptureConnection?
     var previewFactor: CGFloat = 0
     var upScale: CGFloat = 0
+    var hrsiFactor: Float = 0
     var sensorX: Float = 0
+    var hrsiHeight: Float = 0
     
     lazy var distanceLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 18)
-        label.frame = CGRect(x: 100, y: 650, width: 400, height: 60)
+        label.backgroundColor = .black
         label.textColor = .white
+        label.sizeToFit()
+        
         return label
     }()
     //    var ttManager: TTEmotionManager = TTEmotionManager()
@@ -78,6 +82,11 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
             //            self.captureSession1.startRunning()
         }
         
+        self.distanceLabel.snp.makeConstraints { (make) in
+            make.centerX.equalTo(self.view)
+            make.centerY.equalTo(self.view).offset(-200)
+        }
+        
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -104,6 +113,8 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
         device?.unlockForConfiguration()
         
         print("device aperture = \(device?.lensAperture)")
+        print("device formats = \(device?.formats)")
+        print("device active = \(device?.activeFormat) hrsi = \(device?.activeFormat.highResolutionStillImageDimensions) frame = \(device?.activeFormat.accessibilityFrame)")
         //        print("eqv focal length = \(self.getEquivalentFocalLength(format: device!.activeFormat))")
         let input = try? AVCaptureDeviceInput(device: device!)
         
@@ -165,6 +176,7 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
         if let fdesc = CMSampleBufferGetFormatDescription(sampleBuffer) {
             self.clap = CMVideoFormatDescriptionGetCleanAperture(fdesc, originIsAtTopLeft: true)
             self.previewFactor =  (self.previewLayer!.frame.size.width * self.previewLayer!.frame.size.height * UIScreen.main.scale) / (self.clap.size.width * self.clap.size.height * self.upScale)
+            self.hrsiFactor = Float(self.clap.height) / self.hrsiHeight
         }
         
         
@@ -305,7 +317,7 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
             
             let distanceAndroid = self.fLength * (63.0 / self.sensorX) * eyeFactor / 3.0
             
-            let distanceAli = ( 63 * Float(self.view.frame.width) / 24 / (self.eyeDistance)) * self.fLength / 10.0 * (Float(UIScreen.main.scale / self.upScale))
+            let distanceAli = (63 * Float(self.view.frame.width) / 24 / (self.eyeDistance)) * self.fLength / 10.0 * (Float(UIScreen.main.scale / 2.0 * self.upScale)) * self.hrsiFactor
             
             let distance = (700.0 - (w + h)) / 10.0
             self.distanceLabel.text = ("distance = \(String(format: "%.2f", distanceAli)) CM")
@@ -348,7 +360,7 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
         let focalLen = 15.5 / tan(fov/2)
         
         let radi = format.videoFieldOfView / 2 * Float.pi/180.0
-        
+        self.hrsiHeight = Float(format.highResolutionStillImageDimensions.height)
         self.sensorX = tan(radi) * 2 * focalLen
         return focalLen
     }
