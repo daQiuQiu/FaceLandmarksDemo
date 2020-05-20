@@ -12,7 +12,7 @@
 		A60874A42456D8AC00AE208C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A60874A22456D8AC00AE208C /* Main.storyboard */; };
 		A60874A62456D8AF00AE208C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A60874A52456D8AF00AE208C /* Assets.xcassets */; };
 		A60874A92456D8AF00AE208C /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A60874A72456D8AF00AE208C /* LaunchScreen.storyboard */; };
-		A69A89EB2473D9EA0026BEDC /* PhtotViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A69A89EA2473D9EA0026BEDC /* PhtotViewController.swift */; };
+		A69A89EB2473D9EA0026BEDC /* PhotoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A69A89EA2473D9EA0026BEDC /* PhotoViewController.swift */; };
 		A6A760A2246E7A5E00568C50 /* FaceNavigationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6A760A1246E7A5E00568C50 /* FaceNavigationViewController.swift */; };
 		A6EB1535246BD9E500D824D1 /* ARDistanceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EB1534246BD9E500D824D1 /* ARDistanceViewController.swift */; };
 		A6EB1537246BDA1900D824D1 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6EB1536246BDA1900D824D1 /* ViewController.swift */; };
@@ -42,7 +42,7 @@
 		A60874A52456D8AF00AE208C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		A60874A82456D8AF00AE208C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A60874AA2456D8AF00AE208C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		A69A89EA2473D9EA0026BEDC /* PhtotViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhtotViewController.swift; sourceTree = "<group>"; };
+		A69A89EA2473D9EA0026BEDC /* PhotoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoViewController.swift; sourceTree = "<group>"; };
 		A6A760A1246E7A5E00568C50 /* FaceNavigationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FaceNavigationViewController.swift; sourceTree = "<group>"; };
 		A6EB1534246BD9E500D824D1 /* ARDistanceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARDistanceViewController.swift; sourceTree = "<group>"; };
 		A6EB1536246BDA1900D824D1 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -102,7 +102,7 @@
 				A6A760A1246E7A5E00568C50 /* FaceNavigationViewController.swift */,
 				A608749C2456D8AC00AE208C /* AppDelegate.swift */,
 				A6EB1536246BDA1900D824D1 /* ViewController.swift */,
-				A69A89EA2473D9EA0026BEDC /* PhtotViewController.swift */,
+				A69A89EA2473D9EA0026BEDC /* PhotoViewController.swift */,
 				A60874A02456D8AC00AE208C /* VNDistanceViewController.swift */,
 				A6EB1534246BD9E500D824D1 /* ARDistanceViewController.swift */,
 				A60874A22456D8AC00AE208C /* Main.storyboard */,
@@ -215,7 +215,7 @@
 				A6A760A2246E7A5E00568C50 /* FaceNavigationViewController.swift in Sources */,
 				A608749D2456D8AC00AE208C /* AppDelegate.swift in Sources */,
 				A6EB1537246BDA1900D824D1 /* ViewController.swift in Sources */,
-				A69A89EB2473D9EA0026BEDC /* PhtotViewController.swift in Sources */,
+				A69A89EB2473D9EA0026BEDC /* PhotoViewController.swift in Sources */,
 				A6EB1535246BD9E500D824D1 /* ARDistanceViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

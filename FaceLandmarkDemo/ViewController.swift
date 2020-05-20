@@ -83,7 +83,7 @@ class ViewController: UIViewController {
     }
     
     @objc func goToPhoto() {
-        let vc = VNDistanceViewController()
+        let vc = PhotoViewController()
         
         self.navigationController?.pushViewController(vc, animated: true)
     }

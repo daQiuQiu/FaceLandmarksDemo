@@ -17,9 +17,6 @@ import Toast_Swift
 
 class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSampleBufferDelegate {
     
-    var previewLayer1: AVCaptureVideoPreviewLayer?
-    let captureSession1 = AVCaptureSession()
-    
     var previewLayer: AVCaptureVideoPreviewLayer?
     var faceRectLayer = UIView()
     let captureSession = AVCaptureSession()
@@ -37,6 +34,7 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
     var hrsiFactor: Float = 0
     var sensorX: Float = 0
     var hrsiHeight: Float = 0
+    var fovFactor:Float = 0
     
     lazy var distanceLabel: UILabel = {
         let label = UILabel()
@@ -63,7 +61,7 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
         self.fLength = 0
         self.resolutionFactor = Float(3.0 / UIScreen.main.scale)
         self.view.backgroundColor = .red
-        self.cameraView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
+        self.cameraView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width / 2, height: self.view.frame.height)
         //        self.cameraView.frame = self.view.frame
         self.cameraView.center = self.view.center
         //        self.cameraView.contentMode = .scaleAspectFit
@@ -107,19 +105,21 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
         
         let device = AVCaptureDevice.default(.builtInWideAngleCamera, for: .video, position: .front)
         try? device?.lockForConfiguration()
-        //        captureSession.sessionPreset = .iFrame960x540
+//        captureSession.sessionPreset = .iFrame1280x720
+        
         
         captureSession.commitConfiguration()
         device?.unlockForConfiguration()
         
         print("device aperture = \(device?.lensAperture)")
         print("device formats = \(device?.formats)")
-        print("device active = \(device?.activeFormat) hrsi = \(device?.activeFormat.highResolutionStillImageDimensions) frame = \(device?.activeFormat.accessibilityFrame)")
+        print("device active = \(device?.activeFormat) hrsi = \(device?.activeFormat.highResolutionStillImageDimensions)")
         //        print("eqv focal length = \(self.getEquivalentFocalLength(format: device!.activeFormat))")
         let input = try? AVCaptureDeviceInput(device: device!)
         
         
         self.fLength = self.getEquivalentFocalLength(format: device!.activeFormat)
+        
         
         captureSession.addInput(input!)
         
@@ -175,7 +175,7 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
         
         if let fdesc = CMSampleBufferGetFormatDescription(sampleBuffer) {
             self.clap = CMVideoFormatDescriptionGetCleanAperture(fdesc, originIsAtTopLeft: true)
-            self.previewFactor =  (self.previewLayer!.frame.size.width * self.previewLayer!.frame.size.height * UIScreen.main.scale) / (self.clap.size.width * self.clap.size.height * self.upScale)
+//            self.previewFactor =  (self.clap.width / self.clap.height) / (self.view.frame.height / self.view.frame.width)
             self.hrsiFactor = Float(self.clap.height) / self.hrsiHeight
         }
         
@@ -245,7 +245,8 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
         }
         
         
-        
+//        let virturalLayer = AVCaptureVideoPreviewLayer()
+//        virturalLayer.frame = CGRect(x: 0, y: 0, width: self.clap.height, height: self.clap.width)
         
         
         var faceBoxOnscreen = self.previewLayer!.layerRectConverted(fromMetadataOutputRect: firstFace.boundingBox)
@@ -316,12 +317,16 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
             let eyeFactor = Float(Float(self.previewLayer!.frame.width) / (2.0 * self.eyeDistance))
             
             let distanceAndroid = self.fLength * (63.0 / self.sensorX) * eyeFactor / 3.0
+            self.fLength = 31
+//            let distanceAli = (63 * Float(self.view.frame.width) / 24 / (self.eyeDistance)) * self.fLength / 10.0 * (Float(UIScreen.main.scale / 2.0 * self.upScale)) * self.hrsiFactor
             
-            let distanceAli = (63 * Float(self.view.frame.width) / 24 / (self.eyeDistance)) * self.fLength / 10.0 * (Float(UIScreen.main.scale / 2.0 * self.upScale)) * self.hrsiFactor
+            let distanceAli = (1.0 + 63 * Float(self.previewLayer!.frame.width) / 24 / (self.eyeDistance)) * self.fLength / 10.0 * (Float(self.upScale)) * self.hrsiFactor * self.fovFactor
             
-            let distance = (700.0 - (w + h)) / 10.0
+            //TODO: 高分辨率/ upScale / 预期分辨率
+            
+            let distance = (self.view.frame.width + self.view.frame.height - (w + h)) / 10.0
             self.distanceLabel.text = ("distance = \(String(format: "%.2f", distanceAli)) CM")
-            print("distance = \(distance) CM")
+            print("distance = \(distance) CM  distanceAndroid = \(distanceAndroid) distanceTest = \(distanceTest)")
             print("testDistance = \(distanceAli) eyeDistance = \(self.eyeDistance) focal length = \(self.fLength)")
         }
         
@@ -354,10 +359,16 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
         // convert to radians
         self.upScale = format.videoZoomFactorUpscaleThreshold
         let fov = format.videoFieldOfView * Float.pi/180.0
+        self.fovFactor = 67.564 / format.videoFieldOfView
         // angle and opposite of right angle triangle are half the fov and half the width of
         // 35mm film (ie 18mm). The adjacent value of the right angle triangle is the equivalent
         // focal length. Using some right angle triangle math you can work out focal length
         let focalLen = 15.5 / tan(fov/2)
+        
+        let focalPixel = (Float(self.view.frame.width) * (1.0/458.0 * 25.4) / 2.0) / tan(fov/2)
+        
+        print("focalPixel = \(focalPixel)")
+        print("format resolution = \(format)")
         
         let radi = format.videoFieldOfView / 2 * Float.pi/180.0
         self.hrsiHeight = Float(format.highResolutionStillImageDimensions.height)
