@@ -320,14 +320,16 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
             self.fLength = 31
 //            let distanceAli = (63 * Float(self.view.frame.width) / 24 / (self.eyeDistance)) * self.fLength / 10.0 * (Float(UIScreen.main.scale / 2.0 * self.upScale)) * self.hrsiFactor
             
-            let distanceAli = (1.0 + 63 * Float(self.previewLayer!.frame.width) / 24 / (self.eyeDistance)) * self.fLength / 10.0 * (Float(self.upScale)) * self.hrsiFactor * self.fovFactor
+            let upScaleFactor =   Float(CGFloat(self.hrsiHeight) / self.upScale / self.clap.height)
+            
+            let distanceAli = (1.0 + 63 * Float(self.previewLayer!.frame.width) / 24 / (self.eyeDistance)) * self.fLength / 10.0 * (Float(self.upScale)) * self.hrsiFactor * self.fovFactor * upScaleFactor
             
             //TODO: 高分辨率/ upScale / 预期分辨率
             
             let distance = (self.view.frame.width + self.view.frame.height - (w + h)) / 10.0
             self.distanceLabel.text = ("distance = \(String(format: "%.2f", distanceAli)) CM")
             print("distance = \(distance) CM  distanceAndroid = \(distanceAndroid) distanceTest = \(distanceTest)")
-            print("testDistance = \(distanceAli) eyeDistance = \(self.eyeDistance) focal length = \(self.fLength)")
+            print("testDistance = \(distanceAli) eyeDistance = \(self.eyeDistance) focal length = \(self.fLength) upScaleFactor = \(upScaleFactor)")
         }
         
     }
