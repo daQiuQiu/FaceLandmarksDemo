@@ -41,6 +41,7 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
         label.font = .systemFont(ofSize: 18)
         label.backgroundColor = .black
         label.textColor = .white
+        label.numberOfLines = 0
         label.sizeToFit()
         
         return label
@@ -198,6 +199,9 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
     func processLandmarks(faces: [VNFaceObservation]) {
         if faces.count == 0 {
             debugPrint("NO FACE")
+            DispatchQueue.main.async {
+                self.distanceLabel.text = "NO FACE!"
+            }
             return
         }
         
@@ -317,19 +321,29 @@ class VNDistanceViewController: UIViewController, AVCaptureVideoDataOutputSample
             let eyeFactor = Float(Float(self.previewLayer!.frame.width) / (2.0 * self.eyeDistance))
             
             let distanceAndroid = self.fLength * (63.0 / self.sensorX) * eyeFactor / 3.0
-            self.fLength = 31
+            self.fLength = 32
 //            let distanceAli = (63 * Float(self.view.frame.width) / 24 / (self.eyeDistance)) * self.fLength / 10.0 * (Float(UIScreen.main.scale / 2.0 * self.upScale)) * self.hrsiFactor
             
             let upScaleFactor =   Float(CGFloat(self.hrsiHeight) / self.upScale / self.clap.height)
             
-            let distanceAli = (1.0 + 63 * Float(self.previewLayer!.frame.width) / 24 / (self.eyeDistance)) * self.fLength / 10.0 * (Float(self.upScale)) * self.hrsiFactor * self.fovFactor * upScaleFactor
+            //偏转处理
+            var distanceAngle: Float = 0
             
-            //TODO: 高分辨率/ upScale / 预期分辨率
+            let angleEyeDistance = self.eyeDistance / 0.707
+            if abs(firstFace.yaw!.floatValue) < 1.0 && abs(firstFace.yaw!.floatValue) > 0 {
+//                self.eyeDistance = self.eyeDistance / 0.707
+                distanceAngle = (1.0 + 63 * Float(self.previewLayer!.frame.width) / 24 / (self.eyeDistance / 0.707)) * self.fLength / 10.0 * (Float(self.upScale)) * self.hrsiFactor * self.fovFactor * upScaleFactor
+                
+                
+            }
+            
+            let distanceAli = (1.0 + 63 * Float(self.previewLayer!.frame.width) / 24 / (self.eyeDistance)) * self.fLength / 10.0 * (Float(self.upScale)) * self.hrsiFactor * self.fovFactor * upScaleFactor
+        
             
             let distance = (self.view.frame.width + self.view.frame.height - (w + h)) / 10.0
-            self.distanceLabel.text = ("distance = \(String(format: "%.2f", distanceAli)) CM")
+            self.distanceLabel.text = ("distance = \(String(format: "%.2f", distanceAli)) CM \n angleDistance = \(String(format: "%.2f", distanceAngle))CM\n eyeD = \(self.eyeDistance) \n angleD = \(angleEyeDistance)")
             print("distance = \(distance) CM  distanceAndroid = \(distanceAndroid) distanceTest = \(distanceTest)")
-            print("testDistance = \(distanceAli) eyeDistance = \(self.eyeDistance) focal length = \(self.fLength) upScaleFactor = \(upScaleFactor)")
+            print("testDistance = \(distanceAli) eyeDistance = \(self.eyeDistance) focal length = \(self.fLength) upScaleFactor = \(upScaleFactor) \n yaw = \(firstFace.yaw) roll = \(firstFace.roll)")
         }
         
     }
